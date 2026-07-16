@@ -100,18 +100,6 @@
     background: var(--accent); z-index: 100;
     transition: width 0.3s ease; pointer-events: none;
   }
-  .deck-dots {
-    position: fixed; right: clamp(10px, 1.6vw, 20px); top: 50%;
-    transform: translateY(-50%); display: flex; flex-direction: column;
-    gap: 6px; z-index: 100;
-  }
-  .deck-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--text-dim); opacity: 0.3; border: none; padding: 0;
-    cursor: pointer; transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-  .deck-dot:hover { opacity: 0.6; }
-  .deck-dot.active { opacity: 1; transform: scale(1.5); background: var(--accent); }
   .deck-counter {
     position: fixed; bottom: clamp(12px, 2vh, 24px); right: clamp(12px, 2vw, 24px);
     font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
@@ -496,7 +484,6 @@
     .slide__display { font-size: clamp(34px, 7vw, 64px); }
   }
   @media screen and (max-height: 560px) {
-    .deck-dots { display: none; }
     .diagram-note { display: none; }
   }
   @media screen and (max-width: 820px) {
@@ -995,12 +982,7 @@
   }
   SlideEngine.prototype.buildChrome = function () {
     var bar = document.createElement('div'); bar.className = 'deck-progress'; document.body.appendChild(bar); this.bar = bar;
-    var dots = document.createElement('div'); dots.className = 'deck-dots'; var self = this;
-    this.slides.forEach(function (_, i) {
-      var d = document.createElement('button'); d.className = 'deck-dot'; d.title = 'Slide ' + (i + 1);
-      d.onclick = function () { self.goTo(i); }; dots.appendChild(d);
-    });
-    document.body.appendChild(dots); this.dots = [].slice.call(dots.children);
+    var self = this;
     var ctr = document.createElement('div'); ctr.className = 'deck-counter'; document.body.appendChild(ctr); this.counter = ctr;
     var hints = document.createElement('div'); hints.className = 'deck-hints';
     hints.textContent = '← → or scroll to navigate'; document.body.appendChild(hints); this.hints = hints;
@@ -1041,8 +1023,6 @@
   SlideEngine.prototype.prev = function () { if (this.current > 0) this.goTo(this.current - 1); };
   SlideEngine.prototype.update = function () {
     this.bar.style.width = ((this.current + 1) / this.total * 100) + '%';
-    var c = this.current;
-    this.dots.forEach(function (d, i) { d.classList.toggle('active', i === c); });
     this.counter.textContent = (this.current + 1) + ' / ' + this.total;
   };
   SlideEngine.prototype.fadeHints = function () { clearTimeout(this.hintTimer); this.hints.classList.add('faded'); };
